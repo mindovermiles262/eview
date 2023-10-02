@@ -1,0 +1,19 @@
+{
+  "name": "cns-dapr-client",
+  "version": "1.0.0",
+  "description": "Dapr CNS Client",
+  "author": "Padi, Inc",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "get": "node get",
+    "post": "node post",
+    "publish": "node publish",
+    "subscribe": "dapr run --app-id cns-dapr-client --app-port 3001 --app-protocol http --dapr-http-port 3500 node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@dapr/dapr": "^3.1.2"
+  }
+}
