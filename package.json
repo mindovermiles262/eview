@@ -6,11 +6,16 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
     "get": "node get",
     "post": "node post",
     "publish": "node publish",
-    "subscribe": "dapr run --app-id cns-dapr-client --app-port 3001 --app-protocol http --dapr-http-port 3500 node index",
+    "subscribe": "node subscribe",
+    "start": "dapr run -f subscribe.yaml",
+    "stop": "killall node",
+    "get:dapr": "dapr run --app-id cns-dapr-get --resources-path ../cns-dapr/components -- npm run get",
+    "post:dapr": "dapr run --app-id cns-dapr-post --resources-path ../cns-dapr/components -- npm run post",
+    "publish:dapr": "dapr run --app-id cns-dapr-publish --resources-path ../cns-dapr/components -- npm run publish",
+    "subscribe:dapr": "dapr run --app-id cns-dapr-subscribe --app-port 3100 --app-protocol http --resources-path ../cns-dapr/components -- npm run subscribe",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

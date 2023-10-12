@@ -12,7 +12,7 @@ const dapr = require('@dapr/dapr');
 const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
-const CNS_APP_ID = 'cns-dapr';
+const CNS_APP_ID = process.env.CNS_APP_ID || 'cns-dapr';
 
 // Dapr client
 
@@ -27,37 +27,31 @@ async function start() {
   await client.start();
 
   // dapr invoke --app-id cns-dapr --method node/comment --verb POST --data "Testing"
+  var res;
+
   try {
     const method = process.argv[2] || 'node/comment';
-    const data = process.argv[3] || 'Testing';
+    var data = process.argv[3] || 'Testing';
 
-    const res = await client.invoker.invoke(CNS_APP_ID, method, dapr.HttpMethod.POST, data);
+    try {data = JSON.parse(data);}
+    catch(e) {}
 
-    if (res.error !== undefined)
-      throw new Error(res.error);
-
-    // Success
-    console.log(data);
+    res = await client.invoker.invoke(CNS_APP_ID, method, dapr.HttpMethod.POST, data);
   } catch(e) {
     // Failure
-    console.error('Error!');
+    throw new Error('bad request');
   }
 
-/*
-"publish": "dapr publish --publish-app-id cns-dapr-client --pubsub cns --topic node --data '{\"key\":\"value\"}'",
-const res3 = await client.pubsub.publish(
-  CNS_APP_ID,
-  'data', {
-    payload: 'hello, world!'
-  });
+  // Server error?
+  if (res.error !== undefined)
+    throw new Error(res.error);
 
-console.log(res3);
-*/
-
+  // Success
+  console.log('Ok');
 }
 
 // Start application
 start().catch((e) => {
-  console.error(e);
+  console.error('Error:', e.message);
   process.exit(1);
 });

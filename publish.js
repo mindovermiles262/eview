@@ -1,4 +1,4 @@
-// get.js - Dapr CNS client
+// publish.js - Dapr CNS client
 // Copyright 2023 Padi, Inc. All Rights Reserved.
 
 'use strict';
@@ -12,7 +12,7 @@ const dapr = require('@dapr/dapr');
 const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
-const CNS_APP_ID = process.env.CNS_APP_ID || 'cns-dapr';
+const CNS_PUBSUB = process.env.CNS_PUBSUB || 'cns-pubsub';
 
 // Dapr client
 
@@ -26,23 +26,19 @@ async function start() {
   // Start client
   await client.start();
 
-  // dapr invoke --app-id cns-dapr --method node --verb GET
-  var res;
-
+  // dapr publish --publish-app-id cns-dapr --pubsub cnspubsub --topic node --data "Testing"
   try {
-    const method = process.argv[2] || 'node';
-    res = await client.invoker.invoke(CNS_APP_ID, method, dapr.HttpMethod.GET);
+    const topic = process.argv[2] || 'node';
+    const payload = process.argv[3] || 'Testing';
+
+    await client.pubsub.publish(CNS_PUBSUB, topic, payload);
   } catch(e) {
     // Failure
     throw new Error('bad request');
   }
 
-  // Server error?
-  if (res.error !== undefined)
-    throw new Error(res.error);
-
   // Success
-  console.log('data =', JSON.stringify(res.data, null, 2));
+  console.log('Ok');
 }
 
 // Start application
