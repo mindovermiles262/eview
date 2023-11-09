@@ -32,7 +32,7 @@ Your application should now be ready to rock.
 Once installed, run the application with:
 
 ```sh
-npm run get
+npm run start:dapr
 ```
 
 To shut down the application, hit `ctrl-c`.
