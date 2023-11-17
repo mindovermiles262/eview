@@ -45,8 +45,8 @@ const client = new dapr.DaprClient({
 var node = {};
 var updates = 0;
 
-// Update changes
-function update(data) {
+// Display results
+function display(data) {
   // Merge changes
   node = merge(node, data);
 
@@ -54,44 +54,61 @@ function update(data) {
 
   const m = [];
 
-  for (const name in data)
+  for (const name in data) {
     if (name !== 'connections')
       m.push([name, data[name]]);
-
-  const columns = {
-    0: {width: 10},
-    1: {width: 64, wrapWord: true}
-  };
+  }
 
   if (m.length > 0) {
     console.log(table.table(m, {
-      header: {content: 'Meta Data', alignment: 'center'},
-      columns: columns
+      header: {content: 'Node Metadata', alignment: 'center', truncate: 80},
+      columns: {
+        0: {width: 16, truncate: 16},
+        1: {width: 57, wrapWord: true}
+      }
     }).trim());
   }
 
   for (const id in data.connections) {
     const conn = node.connections[id];
 
+    if (conn === null) {
+      console.log(table.table([['Connection ' + id + ' Deleted']]).trim());
+      delete node.connections[id];
+      continue;
+    }
+
     const c = [];
     const p = [];
 
-    for (const name in conn)
+    for (const name in conn) {
       if (name !== 'properties')
         c.push([name, conn[name]]);
+    }
 
     for (const name in conn.properties)
       p.push([name, '│', conn.properties[name]]);
 
     c.push(['properties', table.table(p, {
       border: table.getBorderCharacters('void'),
-      columnDefault: {paddingLeft: 0, paddingRight: 1, truncate: 50},
+      columnDefault: {
+        paddingLeft: 0,
+        paddingRight: 1
+      },
+      columns: {
+        0: {width: 16, truncate: 16},
+        1: {width: 1},
+        2: {width: 38, truncate: 38}
+      },
       drawHorizontalLine: () => false
     }).trim()]);
 
     console.log(table.table(c, {
-      header: {content: 'Connection ' + id, alignment: 'center'},
-      columns: columns
+      header: {content: 'Connection ' + id, alignment: 'center', truncate: 80},
+      columns: {
+        0: {width: 16, truncate: 16},
+        1: {width: 57, wrapWord: true}
+      }
     }).trim());
   }
 }
@@ -102,15 +119,30 @@ async function start() {
   await client.start();
 
   // Fetch current
-  const res = await client.invoker.invoke(CNS_APP_ID, 'node', dapr.HttpMethod.GET);
+  var res;
+
+  try {
+    res = await client.invoker.invoke(
+      CNS_APP_ID,
+      'node',
+      dapr.HttpMethod.GET);
+  } catch(e) {
+    // Failure
+    throw new Error('bad request');
+  }
 
   // Server error?
   if (res.error !== undefined)
-    console.error('Error:', res.error);
-  else update(res.data);
+    throw new Error(res.error);
+
+  // Display results
+  display(res.data);
 
   // Subscribe to changes
-  server.pubsub.subscribe(CNS_PUBSUB, 'node', update);
+  server.pubsub.subscribe(
+    CNS_PUBSUB,
+    'node',
+    display);
 
   // Start server
   await server.start();

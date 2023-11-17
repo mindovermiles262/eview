@@ -37,12 +37,8 @@ async function start() {
     throw new Error('bad request');
   }
 
-  // Server error?
-  if (res.error !== undefined)
-    throw new Error(res.error);
-
-  // Success
-  console.log('data =', JSON.stringify(res.data, null, 2));
+  // Display response
+  console.log(JSON.stringify(res, null, 2));
 }
 
 // Start application
