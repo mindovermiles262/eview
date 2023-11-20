@@ -1,4 +1,4 @@
-// subscribe.js - Dapr CNS client
+// subscribe.js - CNS Dapr client example
 // Copyright 2023 Padi, Inc. All Rights Reserved.
 
 'use strict';

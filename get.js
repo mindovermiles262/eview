@@ -1,4 +1,4 @@
-// get.js - Dapr CNS client
+// get.js - CNS Dapr client example
 // Copyright 2023 Padi, Inc. All Rights Reserved.
 
 'use strict';
@@ -12,7 +12,7 @@ const dapr = require('@dapr/dapr');
 const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
-const CNS_APP_ID = process.env.CNS_APP_ID || 'cns-dapr';
+const CNS_DAPR = process.env.CNS_DAPR || 'cns-dapr';
 
 // Dapr client
 
@@ -31,7 +31,7 @@ async function start() {
 
   try {
     const method = process.argv[2] || 'node';
-    res = await client.invoker.invoke(CNS_APP_ID, method, dapr.HttpMethod.GET);
+    res = await client.invoker.invoke(CNS_DAPR, method, dapr.HttpMethod.GET);
   } catch(e) {
     // Failure
     throw new Error('bad request');

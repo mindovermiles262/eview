@@ -1,4 +1,4 @@
-// publish.js - Dapr CNS client
+// publish.js - CNS Dapr client example
 // Copyright 2023 Padi, Inc. All Rights Reserved.
 
 'use strict';
@@ -26,10 +26,10 @@ async function start() {
   // Start client
   await client.start();
 
-  // dapr publish --publish-app-id cns-dapr --pubsub cnspubsub --topic node --data "Testing"
+  // dapr publish --publish-app-id cns-dapr --pubsub cns-pubsub --topic node --data '{"comment":"Testing"}'
   try {
     const topic = process.argv[2] || 'node';
-    const payload = process.argv[3] || 'Testing';
+    const payload = process.argv[3] || '{"comment":"Testing"}';
 
     await client.pubsub.publish(CNS_PUBSUB, topic, payload);
   } catch(e) {

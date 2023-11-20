@@ -6,18 +6,20 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "start": "dapr run --app-id cns-dapr-client --app-port 3100 --app-protocol http --resources-path ../cns-dapr/components -- node index",
+    "start": "dapr run --app-id cns-dapr-client --app-port 3100 --app-protocol http --resources-path ../cns-dapr/components --log-level error -- node index",
     "get": "dapr run --app-id cns-dapr-get -- node get",
     "post": "dapr run --app-id cns-dapr-post -- node post",
     "publish": "dapr run --app-id cns-dapr-publish -- node publish",
     "subscribe": "dapr run --app-id cns-dapr-subscribe --app-port 3100 --app-protocol http --resources-path ../cns-dapr/components -- node subscribe",
-    "profile": "dapr run --app-id cns-dapr-profile -- node profile",
+    "list": "dapr run --app-id cns-dapr-list --log-level error -- node list",
+    "profile": "dapr run --app-id cns-dapr-profile --log-level error -- node profile",
     "stop": "killall node",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@dapr/dapr": "^3.1.2",
     "object-merge": "^2.5.1",
-    "table": "^6.8.1"
+    "table": "^6.8.1",
+    "wildcard": "^2.0.1"
   }
 }

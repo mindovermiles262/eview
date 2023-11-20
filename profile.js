@@ -1,4 +1,4 @@
-// profile.js - Dapr CNS client
+// profile.js - CNS Dapr client example
 // Copyright 2023 Padi, Inc. All Rights Reserved.
 
 'use strict';
@@ -16,18 +16,18 @@ const SERVER_PORT = process.env.CNS_SERVER_PORT || '3100';
 const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
-const CNS_APP_ID = process.env.CNS_APP_ID || 'cns-dapr';
+const CNS_DAPR = process.env.CNS_DAPR || 'cns-dapr';
 
 // Dapr client
 
 const client = new dapr.DaprClient({
   daprHost: DAPR_HOST,
-  daprPort: DAPR_PORT,
-  logger: {level: dapr.LogLevel.Error}
+  daprPort: DAPR_PORT
 });
 
 // Display results
 function display(data) {
+  // Show profile metadata
   const m = [];
 
   for (const name in data) {
@@ -45,9 +45,11 @@ function display(data) {
 
   var ver = 0;
 
+  // Show profile versions
   for (const version of data.versions) {
     const v = [];
 
+    // Add properties and flags
     for (const property of version.properties) {
       var flags = '';
 
@@ -58,6 +60,7 @@ function display(data) {
       v.push([property.name, property.description, flags]);
     }
 
+    // Show profile
     console.log(table.table(v, {
       header: {content: 'Version #' + ++ver, alignment: 'center', truncate: 80},
       columns: {
@@ -71,12 +74,6 @@ function display(data) {
 
 // Client application
 async function start() {
-  // Get command line
-  const profile = process.argv[2];
-
-  if (profile === undefined)
-    throw new Error('no profile specified');
-
   // Start client
   await client.start();
 
@@ -84,8 +81,10 @@ async function start() {
   var res;
 
   try {
+    const profile = process.argv[2] || 'test.abc';
+
     res = await client.invoker.invoke(
-      CNS_APP_ID,
+      CNS_DAPR,
       'profiles/' + profile,
       dapr.HttpMethod.GET);
   } catch(e) {
@@ -93,7 +92,7 @@ async function start() {
     throw new Error('bad request');
   }
 
-  // Server error?
+  // CNS Dapr error?
   if (res.error !== undefined)
     throw new Error(res.error);
 

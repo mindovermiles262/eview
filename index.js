@@ -1,4 +1,4 @@
-// index.js - Dapr CNS client
+// index.js - CNS Dapr client example
 // Copyright 2023 Padi, Inc. All Rights Reserved.
 
 'use strict';
@@ -17,8 +17,15 @@ const SERVER_PORT = process.env.CNS_SERVER_PORT || '3100';
 const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
-const CNS_APP_ID = process.env.CNS_APP_ID || 'cns-dapr';
+const CNS_DAPR = process.env.CNS_DAPR || 'cns-dapr';
 const CNS_PUBSUB = process.env.CNS_PUBSUB || 'cns-pubsub';
+
+// Dapr client
+
+const client = new dapr.DaprClient({
+  daprHost: DAPR_HOST,
+  daprPort: DAPR_PORT
+});
 
 // Dapr server
 
@@ -27,17 +34,8 @@ const server = new dapr.DaprServer({
   serverPort: SERVER_PORT,
   clientOptions: {
     daprHost: DAPR_HOST,
-    daprPort: DAPR_PORT,
-    logger: {level: dapr.LogLevel.Error}
+    daprPort: DAPR_PORT
   }
-});
-
-// Dapr client
-
-const client = new dapr.DaprClient({
-  daprHost: DAPR_HOST,
-  daprPort: DAPR_PORT,
-  logger: {level: dapr.LogLevel.Error}
 });
 
 // Local data
@@ -50,8 +48,10 @@ function display(data) {
   // Merge changes
   node = merge(node, data);
 
+  // Show update number
   console.log(table.table([['Update #' + ++updates]]).trim());
 
+  // Show node metadata changes
   const m = [];
 
   for (const name in data) {
@@ -69,9 +69,11 @@ function display(data) {
     }).trim());
   }
 
+  // Show connection changes
   for (const id in data.connections) {
     const conn = node.connections[id];
 
+    // Was connection deleted?
     if (conn === null) {
       console.log(table.table([['Connection ' + id + ' Deleted']]).trim());
       delete node.connections[id];
@@ -81,11 +83,13 @@ function display(data) {
     const c = [];
     const p = [];
 
+    // Add connection metadata
     for (const name in conn) {
       if (name !== 'properties')
         c.push([name, conn[name]]);
     }
 
+    // Add connection properties
     for (const name in conn.properties)
       p.push([name, '│', conn.properties[name]]);
 
@@ -103,6 +107,7 @@ function display(data) {
       drawHorizontalLine: () => false
     }).trim()]);
 
+    // Show connection
     console.log(table.table(c, {
       header: {content: 'Connection ' + id, alignment: 'center', truncate: 80},
       columns: {
@@ -123,7 +128,7 @@ async function start() {
 
   try {
     res = await client.invoker.invoke(
-      CNS_APP_ID,
+      CNS_DAPR,
       'node',
       dapr.HttpMethod.GET);
   } catch(e) {
@@ -131,7 +136,7 @@ async function start() {
     throw new Error('bad request');
   }
 
-  // Server error?
+  // CNS Dapr error?
   if (res.error !== undefined)
     throw new Error(res.error);
 
