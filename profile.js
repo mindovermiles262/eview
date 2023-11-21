@@ -17,6 +17,7 @@ const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
 const CNS_DAPR = process.env.CNS_DAPR || 'cns-dapr';
+const CNS_CONTEXT = process.env.CNS_CONTEXT || '';
 
 // Dapr client
 
@@ -74,6 +75,10 @@ function display(data) {
 
 // Client application
 async function start() {
+  // No context?
+  if (CNS_CONTEXT === '')
+    throw new Error('not configured');
+
   // Start client
   await client.start();
 

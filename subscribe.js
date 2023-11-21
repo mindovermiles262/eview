@@ -16,6 +16,7 @@ const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
 const CNS_PUBSUB = process.env.CNS_PUBSUB || 'cns-pubsub';
+const CNS_CONTEXT = process.env.CNS_CONTEXT || '';
 
 // Dapr server
 
@@ -30,8 +31,12 @@ const server = new dapr.DaprServer({
 
 // Client application
 async function start() {
+  // No context?
+  if (CNS_CONTEXT === '')
+    throw new Error('not configured');
+
   // Subscribe to topic
-  const topic = process.argv[2] || 'node';
+  const topic = process.argv[2] || CNS_CONTEXT;
 
   server.pubsub.subscribe(CNS_PUBSUB, topic, (data) => {
     console.log(topic, '=', JSON.stringify(data, null, 2));

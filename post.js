@@ -13,6 +13,7 @@ const DAPR_HOST = process.env.CNS_DAPR_HOST || 'localhost';
 const DAPR_PORT = process.env.CNS_DAPR_PORT || '3500';
 
 const CNS_DAPR = process.env.CNS_DAPR || 'cns-dapr';
+const CNS_CONTEXT = process.env.CNS_CONTEXT || '';
 
 // Dapr client
 
@@ -23,18 +24,23 @@ const client = new dapr.DaprClient({
 
 // Client application
 async function start() {
+  // No context?
+  if (CNS_CONTEXT === '')
+    throw new Error('not configured');
+
   // Start client
   await client.start();
 
-  // dapr invoke --app-id cns-dapr --method node/comment --verb POST --data "Testing"
+  // dapr invoke --app-id cns-dapr --method <context>/comment --verb POST --data "Testing"
   var res;
 
   try {
-    const method = process.argv[2] || 'node/comment';
+    const method = process.argv[2] || CNS_CONTEXT + '/comment';
     var data = process.argv[3] || 'Testing';
 
-    try {data = JSON.parse(data);}
-    catch(e) {}
+    try {
+      data = JSON.parse(data);
+    } catch(e) {}
 
     res = await client.invoker.invoke(CNS_DAPR, method, dapr.HttpMethod.POST, data);
   } catch(e) {

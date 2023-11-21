@@ -45,15 +45,15 @@ To shut down the application, hit `ctrl-c`.
 
 The example uses the following environment variables to configure itself:
 
-<table>
-  <tr><th>Name</th><th>Description</th><th>Default</th></tr>
-  <tr><td>CNS_SERVER_HOST</td><td>Example server host</td><td>'localhost'</td></tr>
-  <tr><td>CNS_SERVER_PORT</td><td>Example server port</td><td>'3100'</td></tr>
-  <tr><td>CNS_DAPR_HOST</td><td>Dapr host</td><td>'localhost'</td></tr>
-  <tr><td>CNS_DAPR_PORT</td><td>Dapr port</td><td>'3500'</td></tr>
-  <tr><td>CNS_DAPR</td><td>CNS Dapr application ID</td><td>'cns-dapr'</td></tr>
-  <tr><td>CNS_PUBSUB</td><td>CNS Dapr PUBSUB component ID</td><td>'cns-pubsub'</td></tr>
-</table>
+| Name             | Description                      | Default                |
+|------------------|----------------------------------|------------------------|
+| CNS_SERVER_HOST  | CNS Example server host          | 'localhost'            |
+| CNS_SERVER_PORT  | CNS Example server port          | '3100'                 |
+| CNS_DAPR_HOST    | Dapr host                        | 'localhost'            |
+| CNS_DAPR_PORT    | Dapr port                        | '3500'                 |
+| CNS_DAPR         | CNS Dapr application ID          | 'cns-dapr'             |
+| CNS_PUBSUB       | CNS Dapr PUBSUB component ID     | 'cns-pubsub'           |
+| CNS_CONTEXT      | CNS Dapr context                 | Must be set            |
 
 ### Walkthrough
 
@@ -78,10 +78,10 @@ Skipping to the bottom of the file, you should see the `start` function. This is
 await client.start();
 ```
 
-Once the client is started, it invokes a `GET /node` request to the CNS Dapr Sidecar. Any communication error thrown by the Dapr SDK is also caught and displayed.
+Once the client is started, it invokes a `GET /<context>` request to the CNS Dapr Sidecar. Any communication error thrown by the Dapr SDK is also caught and displayed.
 
 ```
-res = await client.invoker.invoke(CNS_DAPR, 'node', dapr.HttpMethod.GET);
+res = await client.invoker.invoke(CNS_DAPR, CNS_CONTEXT, dapr.HttpMethod.GET);
 ```
 
 Now it checks the response from CNS Dapr for errors.
@@ -96,12 +96,12 @@ If CNS Dapr does not understand or cannot fulfil the request, it is sets the `er
 display(res.data);
 ```
 
-For a full rundown of methods and what is returned in the `data` object, see the [CNS Dapr](https://github.com/CNSCP/cns-dapr) documentation. Essentially, it is all information about the node and its connections that CNS Dapr is configured for.
+For a full rundown of methods and what is returned in the `data` object, see the [CNS Dapr](https://github.com/CNSCP/cns-dapr) documentation. Essentially, it is all information about the context and its connections that CNS Dapr is configured for.
 
-Now the example sets up a subscription to CNS Dapr, listening for changes to the `node` topic. When changes arrive, these also get sent to the `display` function.
+Now the example sets up a subscription to CNS Dapr, listening for changes to the context topic. When changes arrive, these also get sent to the `display` function.
 
 ```
-server.pubsub.subscribe(CNS_PUBSUB, 'node', display);
+server.pubsub.subscribe(CNS_PUBSUB, CNS_CONTEXT, display);
 ```
 
 Once the subscription has been setup, the application starts the DaprServer.
@@ -110,20 +110,19 @@ Once the subscription has been setup, the application starts the DaprServer.
 await server.start();
 ```
 
-The example now sits displaying `node` topic changes until the application is closed with `ctrl-c`.
+The example now sits displaying context topic changes until the application is closed with `ctrl-c`.
 
 ### Other Examples
 
-<table>
-  <tr><th>Example</th><th>Description</th><th>Source</th></tr>
-  <tr><td>npm run start</td><td>Main example application</td><td>index.js</td></tr>
-  <tr><td>npm run get [method]</td><td>Invoke a CNS Dapr GET method</td><td>get.js</td></tr>
-  <tr><td>npm run post [method] [data]</td><td>Invoke a CNS Dapr POST method</td><td>post.js</td></tr>
-  <tr><td>npm run publish [topic] [data]</td><td>Publish to a CNS Dapr topic</td><td>publish.js</td></tr>
-  <tr><td>npm run subscribe [topic]</td><td>Subscribe to a CNS Dapr topic</td><td>subscribe.js</td></tr>
-  <tr><td>npm run list [profile] [role]</td><td>List active connections</td><td>list.js</td></tr>
-  <tr><td>npm run profile [profile]</td><td>Display profile metadata</td><td>profile.js</td></tr>
-</table>
+| Example                        | Description                | Source         |
+|--------------------------------|----------------------------|----------------|
+| npm run start                  | Main example application   | index.js       |
+| npm run get [method]           | Invoke a GET method        | get.js         |
+| npm run post [method] [data]   | Invoke a POST method       | post.js        |
+| npm run publish [topic] [data] | Publish to a topic         | publish.js     |
+| npm run subscribe [topic]      | Subscribe to a topic       | subscribe.js   |
+| npm run list [profile] [role]  | List active connections    | list.js        |
+| npm run profile [profile]      | Display profile metadata   | profile.js     |
 
 ## Maintainers
 
