@@ -45,7 +45,7 @@ To shut down the application, hit `ctrl-c`.
 
 The example uses the following environment variables to configure itself:
 
-| Name             | Description                      | Default                |
+| Variable         | Description                      | Default                |
 |------------------|----------------------------------|------------------------|
 | CNS_SERVER_HOST  | CNS Example server host          | 'localhost'            |
 | CNS_SERVER_PORT  | CNS Example server port          | '3100'                 |
@@ -54,6 +54,22 @@ The example uses the following environment variables to configure itself:
 | CNS_DAPR         | CNS Dapr application ID          | 'cns-dapr'             |
 | CNS_PUBSUB       | CNS Dapr PUBSUB component ID     | 'cns-pubsub'           |
 | CNS_CONTEXT      | CNS Dapr context                 | Must be set            |
+
+#### Linux
+
+| Command                              | Description                           |
+|--------------------------------------|---------------------------------------|
+| env                                  | List all variables                    |
+| export [name]=[value]                | Set variable                          |
+| unset [name]                         | Remove variable                       |
+
+#### Windows
+
+| Command                              | Description                           |
+|--------------------------------------|---------------------------------------|
+| set                                  | List all variables                    |
+| set [name]=[value]                   | Set variable                          |
+| set [name]=                          | Remove variable                       |
 
 ### Walkthrough
 

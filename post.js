@@ -35,12 +35,12 @@ async function start() {
   var res;
 
   try {
-    const method = process.argv[2] || CNS_CONTEXT + '/comment';
-    var data = process.argv[3] || 'Testing';
+    const method = process.argv[2] || (CNS_CONTEXT + '/comment');
+    const data = process.argv[3] || 'Testing';
 
-    try {
-      data = JSON.parse(data);
-    } catch(e) {}
+//    try {
+//      data = JSON.parse(data);
+//    } catch(e) {}
 
     res = await client.invoker.invoke(CNS_DAPR, method, dapr.HttpMethod.POST, data);
   } catch(e) {
