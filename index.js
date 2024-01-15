@@ -4,10 +4,20 @@
 'use strict';
 
 // Imports
-
+require('dotenv').config()
 const dapr = require('@dapr/dapr');
 const merge = require('object-merge');
 const table = require('table');
+const express = require('express')
+const app = express()
+const post = require("./post")
+const get = require("./get")
+
+app.use(express.json())
+app.use(express.urlencoded());
+app.use(express.static("public"))
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 
 // Constants
 
@@ -44,7 +54,7 @@ const server = new dapr.DaprServer({
 var node = {};
 var updates = 0;
 
-// Display results
+//Display results
 function display(data) {
   // Merge changes
   node = merge(node, data);
@@ -62,10 +72,10 @@ function display(data) {
 
   if (m.length > 0) {
     console.log(table.table(m, {
-      header: {content: 'Node Metadata', alignment: 'center', truncate: 80},
+      header: { content: 'Node Metadata', alignment: 'center', truncate: 80 },
       columns: {
-        0: {width: 16, truncate: 16},
-        1: {width: 57, wrapWord: true}
+        0: { width: 16, truncate: 16 },
+        1: { width: 57, wrapWord: true }
       }
     }).trim());
   }
@@ -101,19 +111,19 @@ function display(data) {
         paddingRight: 1
       },
       columns: {
-        0: {width: 16, truncate: 16},
-        1: {width: 1},
-        2: {width: 38, truncate: 38}
+        0: { width: 16, truncate: 16 },
+        1: { width: 1 },
+        2: { width: 38, truncate: 38 }
       },
       drawHorizontalLine: () => false
     }).trim()]);
 
     // Show connection
     console.log(table.table(c, {
-      header: {content: 'Connection ' + id, alignment: 'center', truncate: 80},
+      header: { content: 'Connection ' + id, alignment: 'center', truncate: 80 },
       columns: {
-        0: {width: 16, truncate: 16},
-        1: {width: 57, wrapWord: true}
+        0: { width: 16, truncate: 16 },
+        1: { width: 57, wrapWord: true }
       }
     }).trim());
   }
@@ -136,7 +146,7 @@ async function start() {
       CNS_DAPR,
       CNS_CONTEXT,
       dapr.HttpMethod.GET);
-  } catch(e) {
+  } catch (e) {
     // Failure
     throw new Error('bad request');
   }
@@ -163,3 +173,25 @@ start().catch((e) => {
   console.error('Error:', e.message);
   process.exit(1);
 });
+
+app.get("/", (req, res) => {
+  res.render("home");
+})
+
+app.post("/post", (req, res) => {
+  post.start(req.body["response-level"]).then(function (result) {
+    res.send(JSON.stringify(result));
+  }).catch((e) => {
+    res.send('Get Error: ' + e.message);
+  })
+})
+
+app.get("/get/:attribute", (req, res) => {
+  get.start(req.params.attribute).then(function (result) {
+    res.send(JSON.stringify(result));
+  }).catch((e) => {
+    res.send('Get Error: ' + e.message);
+  })
+})
+
+app.listen(process.env.PORT || 5500)

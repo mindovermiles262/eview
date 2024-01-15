@@ -23,7 +23,7 @@ const client = new dapr.DaprClient({
 });
 
 // Client application
-async function start() {
+const start = async (oLevel) => {
   // No context?
   if (CNS_CONTEXT === '')
     throw new Error('not configured');
@@ -35,15 +35,16 @@ async function start() {
   var res;
 
   try {
-    const method = process.argv[2] || CNS_CONTEXT + '/comment';
-    var data = process.argv[3] || 'Testing';
+    const method = process.argv[2] || CNS_CONTEXT + '/connections/' + process.env.CNS_CONNECTION_ID + '/properties/operatingLevel';
+    //var data = process.argv[3] || 'Testing!!!';
+    var data = oLevel;
 
-    try {
-      data = JSON.parse(data);
-    } catch(e) {}
+    // try {
+    //   data = JSON.parse(data);
+    // } catch (e) { }
 
     res = await client.invoker.invoke(CNS_DAPR, method, dapr.HttpMethod.POST, data);
-  } catch(e) {
+  } catch (e) {
     // Failure
     throw new Error('bad request');
   }
@@ -53,11 +54,7 @@ async function start() {
     throw new Error(res.error);
 
   // Success
-  console.log('Ok');
+  return "Post Successful";
 }
 
-// Start application
-start().catch((e) => {
-  console.error('Error:', e.message);
-  process.exit(1);
-});
+module.exports.start = start
