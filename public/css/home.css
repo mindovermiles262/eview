@@ -1,0 +1,131 @@
+* {
+    font-family: 'Barlow', sans-serif;
+    color: #055a6d;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#background {
+    width: 100vw;
+    max-width: 100%;
+}
+
+#btn-container {
+    margin-bottom: 20px;
+}
+
+#modal {
+    position: fixed;
+    height: 15rem;
+    width: 25rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 0.3s ease-in-out;
+    border: 2px solid black;
+    border-radius: 10px;
+    box-shadow: 0 2rem 5rem 0 #00000040;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background-color: white;
+    z-index: 10;
+}
+
+#modal.open {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#modal.close {
+    transform: translate(-50%, -50%) scale(0);
+}
+
+#modal-content {
+    padding: 20px 0;
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 0 2rem 5rem 0 #00000040;
+}
+
+#modal-exit {
+    aspect-ratio: 1;
+    height: 6%;
+    margin: 5px;
+    top: 0px;
+    right: 0px;
+    position: absolute;
+    border-radius: 4px;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    color: red !important;
+    box-shadow: 0 0 5px 2px #00000040;
+}
+
+#modal-exit:hover {
+    background-color: lightgray;
+}
+
+#modal-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#simple-level {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5%;
+}
+
+#operating-level {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+#response-level {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 5%;
+    margin-bottom: 10px;
+}
+
+#modal-overlay {
+    position: fixed;
+    transition: 0.3s ease-in-out;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .5);
+    pointer-events: none;
+}
+
+#modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+button {
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 0 5px 2px #00000040;
+}
+
+.oLevelOption {
+    background-color: #00000000;
+}
+
+.oLevelOption:hover {
+    background-color: #00000040
+}

@@ -23,7 +23,7 @@ const client = new dapr.DaprClient({
 });
 
 // Client application
-async function start() {
+async function start(attribute) {
   // No context?
   if (CNS_CONTEXT === '')
     throw new Error('not configured');
@@ -35,19 +35,16 @@ async function start() {
   var res;
 
   try {
-    const method = process.argv[2] || CNS_CONTEXT;
+    const method = process.argv[2] || CNS_CONTEXT + '/connections/' + process.env.CNS_CONNECTION_ID + '/properties/' + attribute;
     res = await client.invoker.invoke(CNS_DAPR, method, dapr.HttpMethod.GET);
-  } catch(e) {
+  } catch (e) {
     // Failure
     throw new Error('bad request');
   }
 
   // Display response
-  console.log(JSON.stringify(res, null, 2));
+  console.log(attribute + ": " + res.data);
+  return res.data
 }
 
-// Start application
-start().catch((e) => {
-  console.error('Error:', e.message);
-  process.exit(1);
-});
+module.exports.start = start
